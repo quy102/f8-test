@@ -60,9 +60,9 @@ const app = {
     render: function () {
         const htmls = this.songs.map((song, index) => {
             return `
-            <div class="song ${
+            <div class="song data-index='${index}' ${
                 index === this.currentIndex ? "active" : ""
-            } data-index='${index}' ">
+            }">
                 <div
                     class="thumb"
                     style="background-image: url('${song.image}');"
@@ -115,6 +115,7 @@ const app = {
             {
                 duration: 10000, // 10s
                 iterations: Infinity,
+                startTime: "0%",
             }
         );
         // tránh việc khi mới vào web chưa chạy nhạc nhưng đĩa bị quay
@@ -127,6 +128,19 @@ const app = {
             } else {
                 audio.play();
             }
+        };
+
+        // when press Space
+        document.onkeypress = function (e) {
+            if (e.code == "Space") {
+                if (_this.isPlaying) {
+                    audio.pause();
+                } else {
+                    audio.play();
+                }
+            }
+            // when press Space, web browser default has scroll down, to avoid it:
+            e.preventDefault();
         };
 
         // when play song
@@ -143,7 +157,7 @@ const app = {
             cdThumbAnimate.pause();
         };
 
-        // When time of song change
+        // When song running
         audio.ontimeupdate = function (e) {
             if (audio.duration) {
                 // avoid NaN
@@ -171,6 +185,8 @@ const app = {
             audio.play();
             // when next song, add "active" to song
             _this.render();
+
+            cdThumb.style.transform = "rotate(0deg)";
         };
 
         prevBtn.onclick = function () {
