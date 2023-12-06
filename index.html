@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Music player</title>
+        <title>Validation Form</title>
         <!-- Font awesome  -->
         <link
             rel="stylesheet"
@@ -67,9 +67,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password_confirmation" class="form-label"
-                        >Nhập lại mật khẩu</label
-                    >
+                    <label for="password_confirmation" class="form-label">
+                        Nhập lại mật khẩu
+                    </label>
                     <input
                         id="password_confirmation"
                         name="password_confirmation"
@@ -85,6 +85,17 @@
         </div>
 
         <!-- Javascript  -->
-        <script src="./main.js"></script>
+        <script src="./validation.js"></script>
+        <script>
+            Validator({
+                form: "#form-1", // select which form will be validated
+                errorSelector: ".form-message",
+                rules: [
+                    Validator.isRequired("#fullname"),
+                    Validator.isEmail("#email"),
+                    Validator.minLength("#password", 6),
+                ],
+            });
+        </script>
     </body>
 </html>
