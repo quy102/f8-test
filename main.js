@@ -115,7 +115,6 @@ const app = {
             {
                 duration: 10000, // 10s
                 iterations: Infinity,
-                startTime: "0%",
             }
         );
         // tránh việc khi mới vào web chưa chạy nhạc nhưng đĩa bị quay
@@ -158,7 +157,7 @@ const app = {
         };
 
         // When song running
-        audio.ontimeupdate = function (e) {
+        audio.ontimeupdate = function () {
             if (audio.duration) {
                 // avoid NaN
                 const progressPercent = Math.floor(
@@ -185,8 +184,6 @@ const app = {
             audio.play();
             // when next song, add "active" to song
             _this.render();
-
-            cdThumb.style.transform = "rotate(0deg)";
         };
 
         prevBtn.onclick = function () {
@@ -234,10 +231,6 @@ const app = {
                     _this.loadCurrentSong();
                     audio.play();
                 }
-
-                // // when click option icon
-                // if (e.target.closest(".option")) {
-                // }
             }
         };
     },
