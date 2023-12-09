@@ -91,10 +91,28 @@
                 form: "#form-1", // select which form will be validated
                 errorSelector: ".form-message",
                 rules: [
-                    Validator.isRequired("#fullname"),
+                    Validator.isRequired(
+                        "#fullname",
+                        "Vui lòng nhập đầy đủ tên"
+                    ),
+                    Validator.isRequired("#email"),
                     Validator.isEmail("#email"),
+                    Validator.isRequired("#password"),
                     Validator.minLength("#password", 6),
+                    Validator.isRequired("#password_confirmation"),
+                    Validator.isConfirmed(
+                        "#password_confirmation",
+                        function () {
+                            return document.querySelector("#form-1 #password")
+                                .value;
+                        },
+                        "Mật khẩu nhập lại không chính xác"
+                    ),
                 ],
+                // Case submit with JS
+                onSubmit: function (data) {
+                    console.log(data);
+                },
             });
         </script>
     </body>
