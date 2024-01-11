@@ -44,6 +44,12 @@ html {
     flex-direction: column;
 }
 
+.form-group.space {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .form-label,
 .form-message {
     text-align: left;

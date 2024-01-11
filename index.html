@@ -80,6 +80,35 @@
                     <span class="form-message"></span>
                 </div>
 
+                <div class="form-group space">
+                    <label for="gender" class="form-label"> Giới tính </label>
+                    <label for="male">Nam</label>
+                    <input
+                        id="male"
+                        name="gender"
+                        value="male"
+                        type="radio"
+                        class="form-control"
+                    />
+                    <label for="male">Nữ</label>
+                    <input
+                        id="female"
+                        name="gender"
+                        value="female"
+                        type="radio"
+                        class="form-control"
+                    />
+                    <label for="other">Khác</label>
+                    <input
+                        id="other"
+                        name="gender"
+                        value="other"
+                        type="radio"
+                        class="form-control"
+                    />
+                    <span class="form-message"></span>
+                </div>
+
                 <button class="form-submit">Đăng ký</button>
             </form>
         </div>
@@ -89,6 +118,7 @@
         <script>
             Validator({
                 form: "#form-1", // select which form will be validated
+                formGroupSelector: ".form-group",
                 errorSelector: ".form-message",
                 rules: [
                     Validator.isRequired(
@@ -108,9 +138,11 @@
                         },
                         "Mật khẩu nhập lại không chính xác"
                     ),
+                    Validator.isRequired('input[name="gender"]'),
                 ],
                 // Case submit with JS
                 onSubmit: function (data) {
+                    // Call API
                     console.log(data);
                 },
             });
