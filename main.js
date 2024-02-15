@@ -1,10 +1,12 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const PLAYER_STORAGE_KEY = "F8_PLAYER";
+
 const playlist = $(".playlist");
 const cd = $(".cd");
-const cdThumb = $(".cd-thumb");
 const heading = $("header h2");
+const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
 const playBtn = $(".btn-toggle-play");
 const pauseBtn = $(".icon-pause");
@@ -23,6 +25,13 @@ const app = {
     isRandom: false,
 
     isRepeat: false,
+
+    config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+
+    setConfig: function (key, value) {
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+    },
 
     songs: [
         {
@@ -60,9 +69,9 @@ const app = {
     render: function () {
         const htmls = this.songs.map((song, index) => {
             return `
-            <div class="song data-index='${index}' ${
-                index === this.currentIndex ? "active" : ""
-            }">
+            <div class="song data-index='${index}'
+            ${index === this.currentIndex ? "active" : ""}"
+            >
                 <div
                     class="thumb"
                     style="background-image: url('${song.image}');"
@@ -80,7 +89,7 @@ const app = {
         playlist.innerHTML = htmls.join("");
     },
 
-    // define properties for this object. That means "app" has a property is "currentSong"
+    // define properties for this object. That means "app" has a new property is "currentSong"
     defineProperties: function () {
         Object.defineProperty(this, "currentSong", {
             get: function () {
@@ -90,7 +99,7 @@ const app = {
     },
 
     handleEvents: function () {
-        // avoid unwants contexts
+        // avoid unexpected contexts
         const _this = this;
 
         // get width of cd
@@ -109,7 +118,7 @@ const app = {
             cd.style.opacity = newCdWidth / scrollTop;
         };
 
-        // when cdThumb rotate
+        // when cdThumb rotate (animate API)
         const cdThumbAnimate = cdThumb.animate(
             [{ transform: "rotate(360deg)" }],
             {
@@ -132,6 +141,8 @@ const app = {
 
         // when press Space
         document.onkeypress = function (e) {
+            // when press Space, web browser default has scroll down, to avoid it:
+            e.preventDefault();
             if (e.code == "Space") {
                 if (_this.isPlaying) {
                     audio.pause();
@@ -139,8 +150,6 @@ const app = {
                     audio.play();
                 }
             }
-            // when press Space, web browser default has scroll down, to avoid it:
-            e.preventDefault();
         };
 
         // when play song
@@ -205,6 +214,7 @@ const app = {
             // toggle method
             // không click vào e.target vì mục đích muốn khi click vào thẻ đó thì đều được áp dụng
             randomBtn.classList.toggle("active", _this.isRandom);
+            _this.setConfig("isRandom", _this.isRandom);
         };
 
         // when end a song then play next song
@@ -221,6 +231,7 @@ const app = {
         repeatBtn.onclick = function () {
             _this.isRepeat = !_this.isRepeat;
             repeatBtn.classList.toggle("active", _this.isRepeat);
+            _this.setConfig("isRepeat", _this.isRepeat);
         };
 
         // when click playlist
@@ -230,8 +241,9 @@ const app = {
             if (songNode || e.target.closest(".option")) {
                 // when click a song
                 if (songNode) {
-                    _this.currentIndex = songNode.dataset.index;
+                    _this.currentIndex = Number(songNode.dataset.index);
                     _this.loadCurrentSong();
+                    _this.render();
                     audio.play();
                 }
 
@@ -246,6 +258,11 @@ const app = {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url(${this.currentSong.image})`;
         audio.src = this.currentSong.path;
+    },
+
+    loadConfig: function () {
+        this.isRandom = this.config.isRandom;
+        this.isRepeat = this.config.isRepeat;
     },
 
     nextSong: function () {
@@ -276,7 +293,10 @@ const app = {
     },
 
     start: function () {
-        // define properties for object (when define success, app has "currentSong") property
+        // assign configuration to app
+        this.loadConfig();
+
+        // define properties for object (when define successfully, app has "currentSong" property)
         this.defineProperties();
 
         // listen and execute events (DOM)
@@ -287,6 +307,10 @@ const app = {
 
         // render out to web
         this.render();
+
+        // show the initial state of Repeat and Random btn
+        randomBtn.classList.toggle("active", this.isRandom);
+        repeatBtn.classList.toggle("active", this.isRepeat);
     },
 };
 

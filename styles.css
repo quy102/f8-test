@@ -90,6 +90,7 @@ header h2 {
     color: #666;
     padding: 18px;
     font-size: 18px;
+    cursor: pointer;
 }
 
 .control .btn:not(.btn-toggle-play):hover {
