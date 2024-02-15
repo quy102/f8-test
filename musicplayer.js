@@ -5,8 +5,8 @@ const PLAYER_STORAGE_KEY = "F8_PLAYER";
 
 const playlist = $(".playlist");
 const cd = $(".cd");
-const cdThumb = $(".cd-thumb");
 const heading = $("header h2");
+const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
 const playBtn = $(".btn-toggle-play");
 const pauseBtn = $(".icon-pause");
@@ -69,9 +69,9 @@ const app = {
     render: function () {
         const htmls = this.songs.map((song, index) => {
             return `
-            <div class="song data-index='${index}' ${
-                index === this.currentIndex ? "active" : ""
-            }">
+            <div class="song data-index='${index}'
+            ${index === this.currentIndex ? "active" : ""}"
+            >
                 <div
                     class="thumb"
                     style="background-image: url('${song.image}');"
@@ -89,7 +89,7 @@ const app = {
         playlist.innerHTML = htmls.join("");
     },
 
-    // define properties for this object. That means "app" has a property is "currentSong"
+    // define properties for this object. That means "app" has a new property is "currentSong"
     defineProperties: function () {
         Object.defineProperty(this, "currentSong", {
             get: function () {
@@ -118,7 +118,7 @@ const app = {
             cd.style.opacity = newCdWidth / scrollTop;
         };
 
-        // when cdThumb rotate
+        // when cdThumb rotate (animate API)
         const cdThumbAnimate = cdThumb.animate(
             [{ transform: "rotate(360deg)" }],
             {
@@ -140,6 +140,8 @@ const app = {
 
         // when press Space
         document.onkeypress = function (e) {
+            // when press Space, web browser default has scroll down, to avoid it:
+            e.preventDefault();
             if (e.code == "Space") {
                 if (_this.isPlaying) {
                     audio.pause();
@@ -147,8 +149,6 @@ const app = {
                     audio.play();
                 }
             }
-            // when press Space, web browser default has scroll down, to avoid it:
-            e.preventDefault();
         };
 
         // when play song
@@ -238,8 +238,9 @@ const app = {
             if (songNode || e.target.closest(".option")) {
                 // when click a song
                 if (songNode) {
-                    _this.currentIndex = songNode.dataset.index;
+                    _this.currentIndex = Number(songNode.dataset.index);
                     _this.loadCurrentSong();
+                    _this.render();
                     audio.play();
                 }
             }
@@ -285,9 +286,6 @@ const app = {
     },
 
     start: function () {
-        // set configuration to app
-        this.loadConfig();
-
         // define properties for object (when define success, app has "currentSong") property
         this.defineProperties();
 
@@ -299,10 +297,6 @@ const app = {
 
         // render out to web
         this.render();
-
-        // show initial state of Repeat and Random Btn
-        randomBtn.classList.toggle("active", this.isRandom);
-        repeatBtn.classList.toggle("active", this.isRepeat);
     },
 };
 
