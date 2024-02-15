@@ -1,6 +1,8 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const PLAYER_STORAGE_KEY = "F8_PLAYER";
+
 const playlist = $(".playlist");
 const cd = $(".cd");
 const cdThumb = $(".cd-thumb");
@@ -23,6 +25,13 @@ const app = {
     isRandom: false,
 
     isRepeat: false,
+
+    config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+
+    setConfig: function (key, value) {
+        this.config[key] = value;
+        localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+    },
 
     songs: [
         {
@@ -90,7 +99,7 @@ const app = {
     },
 
     handleEvents: function () {
-        // avoid unwants contexts
+        // avoid unexpected contexts
         const _this = this;
 
         // get width of cd
@@ -202,6 +211,7 @@ const app = {
             // toggle method
             // không click vào e.target vì mục đích muốn khi click vào thẻ đó thì đều được áp dụng
             randomBtn.classList.toggle("active", _this.isRandom);
+            _this.setConfig("isRandom", _this.isRandom);
         };
 
         // when end a song then play next song
@@ -218,6 +228,7 @@ const app = {
         repeatBtn.onclick = function () {
             _this.isRepeat = !_this.isRepeat;
             repeatBtn.classList.toggle("active", _this.isRepeat);
+            _this.setConfig("isRepeat", _this.isRepeat);
         };
 
         // when click playlist
@@ -239,6 +250,11 @@ const app = {
         heading.textContent = this.currentSong.name;
         cdThumb.style.backgroundImage = `url(${this.currentSong.image})`;
         audio.src = this.currentSong.path;
+    },
+
+    loadConfig: function () {
+        this.isRandom = this.config.isRandom;
+        this.isRepeat = this.config.isRepeat;
     },
 
     nextSong: function () {
@@ -269,6 +285,9 @@ const app = {
     },
 
     start: function () {
+        // set configuration to app
+        this.loadConfig();
+
         // define properties for object (when define success, app has "currentSong") property
         this.defineProperties();
 
@@ -280,6 +299,10 @@ const app = {
 
         // render out to web
         this.render();
+
+        // show initial state of Repeat and Random Btn
+        randomBtn.classList.toggle("active", this.isRandom);
+        repeatBtn.classList.toggle("active", this.isRepeat);
     },
 };
 
